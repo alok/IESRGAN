@@ -184,7 +184,6 @@ def define_F(opt, use_bn=False):
     netF = arch.VGGFeatureExtractor(
         feature_layer=feature_layer, use_bn=use_bn, use_input_norm=True, device=device
     )
-    # netF = arch.ResNet101FeatureExtractor(use_input_norm=True, device=device)
     if gpu_ids:
         netF = nn.DataParallel(netF)
     netF.eval()  # No need to train

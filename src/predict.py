@@ -6,7 +6,6 @@ import numpy as np
 from PIL import Image
 from torchvision.transforms import ToTensor
 
-# from skimage.io import imshow, imread, imsave
 from tqdm import trange
 
 from models.architecture import RRDBNet, torch
@@ -26,17 +25,7 @@ if __name__ == "__main__":
     netG.load_state_dict(torch.load(config["path_to_model"])["model_state_dict"])
     netG.to(device).eval()
 
-    # img = Image.open(config['path_to_image'])
     img = Image.open("../images/Danil.jpeg")
-
-    # with torch.no_grad():
-    # 	img_tensor = ToTensor()(img).unsqueeze(0).to(device)
-    # 	sr = netG(img_tensor)
-    #
-    # sr[sr < 0] = 0
-    # sr[sr > 1] = 1
-    # sr = np.moveaxis(sr.data.squeeze().cpu().numpy()*255, 0, -1).astype(int)
-    # cv2.imwrite("123.png", sr[..., ::-1])
 
     scale = default_config["upscale_factor"]
     image = np.asarray(img)
@@ -68,5 +57,4 @@ if __name__ == "__main__":
     plt.figure()
     plt.imshow(sr_image)
     plt.show()
-    # cv2.imwrite(config['path_to_save_image', sr_image[..., ::-1]])
     cv2.imwrite("../images/DanilSR4.png", sr_image[..., ::-1])
