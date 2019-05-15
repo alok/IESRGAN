@@ -6,8 +6,9 @@ from multiprocessing import Pool
 import click
 import cv2
 import numpy as np
+from pathlib import Path
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 from utils.progress_bar import ProgressBar
 import json
 
