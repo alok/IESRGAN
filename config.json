@@ -2,10 +2,10 @@
     "DEFAULT": {
     "upscale_factor": 4,
     "crop_size": 112,
-    "PATH_TO_TRAIN_LR_DATA": "/media/danil/Data/Experiments/ESRGAN/data/Flickr2K_train_HR_sub_bicLRx4",
-    "PATH_TO_TRAIN_HR_DATA": "/media/danil/Data/Experiments/ESRGAN/data/Flickr2K_train_HR_sub_x4",
-    "PATH_TO_VALID_LR_DATA": "/media/danil/Data/Experiments/ESRGAN/data/Flickr2K_valid_HR_sub_bicLRx4",
-    "PATH_TO_VALID_HR_DATA": "/media/danil/Data/Experiments/ESRGAN/data/Flickr2K_valid_HR_sub_x4"
+    "PATH_TO_TRAIN_LR_DATA": "~/data/wind/low-res/bicubic",
+    "PATH_TO_TRAIN_HR_DATA": "~/data/wind/hi-res/",
+    "PATH_TO_VALID_LR_DATA": "~/data/wind/val/low-res/bicubic",
+    "PATH_TO_VALID_HR_DATA": "~/data/wind/val/hi-res"
   },
 
   "TRAIN_PSNR": {
@@ -46,7 +46,7 @@
 
     "PREDICT": {
     "path_to_model": "../output/models/netG_x4_epoch=25",
-    "path_to_image": "/media/danil/Data/Datasets/Flickr2K/val/002141.png",
-    "path_to_save_image": "..images/002141.png"
+    "path_to_image": "~/data/wind/val/low-res/bicubic/0-d01_T2_2001.png",
+    "path_to_save_image": "../images/0-d01_T2_2001.png"
   }
 }

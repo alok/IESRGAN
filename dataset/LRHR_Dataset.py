@@ -1,9 +1,19 @@
 import glob
 import random
+from pathlib import Path
+from typing import List
 
 import torch.utils.data as data
 import torchvision.transforms.functional as TF
 from PIL import Image
+
+
+def expand_path(s: str) -> Path:
+    return Path(s).expanduser().resolve(strict=True)
+
+
+def get_images(s: str) -> List[Path]:
+    return list(expand_path(s).glob("*.png"))
 
 
 class DatasetFromFolder(data.Dataset):
@@ -11,18 +21,18 @@ class DatasetFromFolder(data.Dataset):
 
         super().__init__()
         if mode == "train":
-            self.hr_images = glob.glob(config["PATH_TO_TRAIN_HR_DATA"] + "/*.png")
-            self.lr_images = glob.glob(config["PATH_TO_TRAIN_LR_DATA"] + "/*.png")
+            self.hr_images = get_images(config["PATH_TO_TRAIN_HR_DATA"])
+            self.lr_images = get_images(config["PATH_TO_TRAIN_LR_DATA"])
         else:
-            self.hr_images = glob.glob(config["PATH_TO_VALID_HR_DATA"] + "/*.png")
-            self.lr_images = glob.glob(config["PATH_TO_VALID_LR_DATA"] + "/*.png")
+            self.hr_images = get_images(config["PATH_TO_VALID_HR_DATA"])
+            self.lr_images = get_images(config["PATH_TO_VALID_LR_DATA"])
 
         assert len(self.hr_images) == len(
             self.lr_images
         ), "Count HR images must be equal count LR images!"
-        assert list([x.split("/")[-1] for x in self.hr_images]) == list(
-            [x.split("/")[-1] for x in self.hr_images]
-        ), "List HR images must be equal List LR images!"
+        assert [x.split("/")[-1] for x in self.hr_images] == [
+            x.split("/")[-1] for x in self.hr_images
+        ], "List HR images must be equal List LR images!"
 
     def __getitem__(self, index):
         hr_image = Image.open(self.hr_images[index])
@@ -48,5 +58,5 @@ class DatasetFromFolder(data.Dataset):
         mask = TF.to_tensor(mask)
         return image, mask
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.hr_images)
