@@ -13,13 +13,21 @@ import json
 
 
 @click.command()
-@click.option('--input_folder', default='/media/danil/Data/Datasets/DIV2K/DIV2K_train_HR', help='path to data')
-@click.option('--save_folder', default='/media/danil/Data/Experiments/ESRGAN/data/DIV2K_train_HR_sub_x', help='path to save data')
+@click.option(
+    "--input_folder",
+    default="/media/danil/Data/Datasets/DIV2K/DIV2K_train_HR",
+    help="path to data",
+)
+@click.option(
+    "--save_folder",
+    default="/media/danil/Data/Experiments/ESRGAN/data/DIV2K_train_HR_sub_x",
+    help="path to save data",
+)
 def main(input_folder, save_folder):
     save_folder += str(config["upscale_factor"])
     """A multi-thread tool to crop sub imags."""
     n_thread = 8
-    crop_sz = config['crop_size'] * config['upscale_factor']
+    crop_sz = config["crop_size"] * config["upscale_factor"]
     step = 240
     thres_sz = 48
     compression_level = 3  # 3 is the default value in cv2
@@ -28,14 +36,16 @@ def main(input_folder, save_folder):
 
     if not os.path.exists(save_folder):
         os.makedirs(save_folder)
-        print('mkdir [{:s}] ...'.format(save_folder))
+        print(f"mkdir [{save_folder}] ...")
     else:
-        print('Folder [{:s}] already exists. Exit...'.format(save_folder))
+        print(f"Folder [{save_folder}] already exists. Exit...")
         sys.exit(1)
 
     img_list = []
     for root, _, file_list in sorted(os.walk(input_folder)):
-        path = [os.path.join(root, x) for x in file_list]  # assume only images in the input_folder
+        path = [
+            os.path.join(root, x) for x in file_list
+        ]  # assume only images in the input_folder
         img_list.extend(path)
 
     def update(arg):
@@ -45,12 +55,14 @@ def main(input_folder, save_folder):
 
     pool = Pool(n_thread)
     for path in img_list:
-        pool.apply_async(worker,
+        pool.apply_async(
+            worker,
             args=(path, save_folder, crop_sz, step, thres_sz, compression_level),
-            callback=update)
+            callback=update,
+        )
     pool.close()
     pool.join()
-    print('All subprocesses done.')
+    print("All subprocesses done.")
 
 
 def worker(path, save_folder, crop_sz, step, thres_sz, compression_level):
@@ -63,7 +75,7 @@ def worker(path, save_folder, crop_sz, step, thres_sz, compression_level):
     elif n_channels == 3:
         h, w, c = img.shape
     else:
-        raise ValueError('Wrong image shape - {}'.format(n_channels))
+        raise ValueError(f"Wrong image shape - {n_channels}")
 
     h_space = np.arange(0, h - crop_sz + 1, step)
     if h - (h_space[-1] + crop_sz) > thres_sz:
@@ -77,18 +89,22 @@ def worker(path, save_folder, crop_sz, step, thres_sz, compression_level):
         for y in w_space:
             index += 1
             if n_channels == 2:
-                crop_img = img[x:x + crop_sz, y:y + crop_sz]
+                crop_img = img[x : x + crop_sz, y : y + crop_sz]
             else:
-                crop_img = img[x:x + crop_sz, y:y + crop_sz, :]
+                crop_img = img[x : x + crop_sz, y : y + crop_sz, :]
             crop_img = np.ascontiguousarray(crop_img)
             cv2.imwrite(
-                os.path.join(save_folder, img_name.replace('.png', '_s{:03d}.png'.format(index))),
-                crop_img, [cv2.IMWRITE_PNG_COMPRESSION, compression_level])
-    return 'Processing {:s} ...'.format(img_name)
+                os.path.join(
+                    save_folder, img_name.replace(".png", f"_s{index:03d}.png")
+                ),
+                crop_img,
+                [cv2.IMWRITE_PNG_COMPRESSION, compression_level],
+            )
+    return f"Processing {img_name} ..."
 
 
-if __name__ == '__main__':
-    with open('config.json', 'r') as f:
+if __name__ == "__main__":
+    with open("config.json", "r") as f:
         config = json.load(f)
-        config = config['DEFAULT']
+        config = config["DEFAULT"]
     main()
