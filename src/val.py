@@ -1,13 +1,18 @@
+import json
 from math import log10
+
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-import config
 from dataset.LRHR_Dataset import DatasetFromFolder
 from models.architecture import RRDBNet, torch
 from utils.pytorch_ssim import ssim
 
+
 if __name__ == "__main__":
+    with open("../config.json", "r") as f:
+        config = json.load(f)
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     valid_set = DatasetFromFolder(mode="valid")
@@ -16,7 +21,12 @@ if __name__ == "__main__":
     )
 
     netG = RRDBNet(
-        in_nc=3, out_nc=3, nf=16, nb=16, gc=32, upscale=config.UPSCALE_FACTOR
+        in_nc=3,
+        out_nc=3,
+        nf=16,
+        nb=16,
+        gc=32,
+        upscale=config["DEFAULT"]["upscale_factor"],
     )
     netG.load_state_dict(
         torch.load(f"output/models/netG_epoch={10}")["model_state_dict"]
